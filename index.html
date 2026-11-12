@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>headache</title>
 
   <link rel="shortcut icon" href="http://78.media.tumblr.com/avatar_64975811f704_128.pnj" />
@@ -43,11 +43,24 @@
       text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
     }
 
-    /*-------------------------------OCULTAR SCROLLBAR----------------------------------*/
+    * {
+      box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+    }
+
+    /*-------------------------------SIN DESPLAZAMIENTO----------------------------------*/
     html, body {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
 
     html::-webkit-scrollbar,
@@ -58,13 +71,6 @@
       height: 0;
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      transition: all 0.35s ease-out;
-    }
-
     /*-------------------------CONTROLS----------------------*/
     iframe.tmblr-iframe {
       z-index: 99999999999999 !important;
@@ -73,6 +79,7 @@
       opacity: 0.4;
       transform: scale(0.6);
       transform-origin: 100% 0;
+      transition: opacity 0.3s ease;
     }
 
     iframe.tmblr-iframe:hover {
@@ -94,17 +101,10 @@
     }
 
     /*---------------------------BODY (CENTRADO Y NOCTURNO)-------------------------------------*/
-    html {
-      min-height: 100%;
-    }
-
     body {
       background-color: #0f0f11;
-      min-height: 100vh;
-      margin: 0;
-      padding: 24px 16px;
+      padding: 16px;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       font-family: 'Source Sans Pro', sans-serif;
@@ -120,6 +120,7 @@
     a:visited {
       color: #e4e4e7;
       text-decoration: none;
+      transition: color 0.3s ease;
     }
 
     a:hover {
@@ -140,11 +141,12 @@
       margin: 0 auto;
       max-width: 420px;
       width: 100%;
+      transform-origin: center center;
     }
 
     header {
       width: 100%;
-      margin: 0 auto 24px auto;
+      margin: 0 auto 20px auto;
     }
 
     #entries {
@@ -254,7 +256,7 @@
       color: #e4e4e7;
     }
 
-    /* Contenedor de insignias movido debajo de las fotos a la derecha */
+    /* Contenedor de insignias debajo de las fotos a la derecha */
     .post-badges {
       display: flex;
       justify-content: flex-end;
@@ -274,6 +276,7 @@
       color: #d4d4dc;
       border-radius: 5px;
       border: 1px solid #34343e;
+      transition: all 0.3s ease;
     }
 
     .reblog-source.photo {
@@ -309,6 +312,7 @@
       text-align: center;
       cursor: pointer;
       opacity: 0;
+      transition: all 0.35s ease-out;
     }
 
     .like-and-reblog .post-like {
@@ -354,6 +358,7 @@
       font-size: 10px;
       color: #a1a1aa;
       width: 100%;
+      transition: color 0.3s ease;
     }
 
     .like_button:hover + .custom-like i,
@@ -364,6 +369,7 @@
     .post-reblog i {
       font-size: 10px;
       color: #a1a1aa;
+      transition: color 0.3s ease;
     }
 
     .post-reblog:hover i {
@@ -384,10 +390,14 @@
       margin-bottom: 4px;
     }
 
-    /* Ajustes extra para pantallas muy pequeñas */
+    /* Ajustes para pantallas pequeñas */
     @media (max-width: 400px) {
       body {
-        padding: 16px 12px;
+        padding: 12px;
+      }
+
+      header {
+        margin-bottom: 14px;
       }
 
       #entries .post {
@@ -474,7 +484,6 @@
           </div>
         </div><!--post-inner-->
 
-        <!-- Elementos movidos de la zona roja a la marca azul -->
         <div class="post-badges">
           <a href="https://xat.me/iDaviiessx"><div class="reblog-source photo">♡</div></a>
           <a href="https://xat.me/schroederz"><div class="reblog-source photo">+</div></a>
@@ -499,9 +508,19 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="https://static.tumblr.com/d4tdea8/Mkhnw70y5/pxuphotoset.js"></script>
-  <script src="https://static.tumblr.com/d4tdea8/8rfo8l8ry/jquery.infinitescroll.min.js"></script>
 
   <script>
+    function fitToViewport() {
+      var $wrapper = $('#wrapper');
+      $wrapper.css('transform', 'none');
+      var availableHeight = window.innerHeight - 24;
+      var contentHeight = $wrapper.outerHeight(true);
+      if (contentHeight > availableHeight && availableHeight > 0) {
+        var scale = availableHeight / contentHeight;
+        $wrapper.css('transform', 'scale(' + scale + ')');
+      }
+    }
+
     $(document).ready(function () {
       $('iframe.tumblr_audio_player').load(function () {
         $('iframe.tumblr_audio_player').contents().find("head")
@@ -518,7 +537,12 @@
       };
 
       $('.photo-slideshow').pxuPhotoset(photosetOptions);
+
+      fitToViewport();
+      setTimeout(fitToViewport, 200);
     });
+
+    $(window).on('load resize', fitToViewport);
   </script>
 </body>
 </html>
